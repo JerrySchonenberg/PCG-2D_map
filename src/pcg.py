@@ -74,6 +74,10 @@ def add_relief(map: np.ndarray) -> np.ndarray:
 # BIOMES ======================================================================================
 #add various biomes to the map
 def add_biomes(map: np.ndarray) -> np.ndarray:
+  
+  
+
+
 
 
 
@@ -114,9 +118,10 @@ def add_water(map: np.ndarray) -> np.ndarray:
 #calls all function which will in turn alter the map
 def generate_map(res_X: int, res_Y: int) -> np.ndarray:
   map = init_map(res_X, res_Y)
+
   map = add_relief(map)
   map = add_biomes(map)
-  map = add_water(map)
+  #map = add_water(map)
 
   return map
 
