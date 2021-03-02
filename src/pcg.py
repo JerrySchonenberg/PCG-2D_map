@@ -121,7 +121,7 @@ def generate_map(res_X: int, res_Y: int) -> np.ndarray:
 
   map = add_relief(map)
   map = add_biomes(map)
-  #map = add_water(map)
+  map = add_water(map)
 
   return map
 
