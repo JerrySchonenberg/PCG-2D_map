@@ -72,15 +72,27 @@ def add_relief(map: np.ndarray) -> np.ndarray:
 #==============================================================================================
 
 # BIOMES ======================================================================================
+#randomly select a biome (excluding GRASS and WATER)
+def select_biome() -> float:
+  R = random.randint(0, N_BIOMES-1)
+  if R == 0:
+    return SAND
+  elif R == 1:
+    return ICE
+  elif R == 2:
+    return JUNGLE
+  elif R == 3:
+    return MUSHROOM
+
 #add various biomes to the map
 def add_biomes(map: np.ndarray) -> np.ndarray:
-  
-  
-
-
-
-
-
+  res_X, res_Y = len(map[0]), len(map)
+  for y in range(res_Y):
+    for x in range(res_X):
+      #add biome to map
+      if random.randint(0, 2000) <= CHANCE_BIOME:
+        biome = select_biome()
+        #TODO
   return map
 
 #==============================================================================================
@@ -91,7 +103,7 @@ def count_non_water(map: np.ndarray, x: int, y: int) -> int:
   count = 0
   for j in range(-1, 2):
     for i in range(-1, 2):
-      if on_map(map, x+i, y+1) and not map[y+j][x+i][0] == WATER:
+      if on_map(map, x+i, y+j) and not map[y+j][x+i][0] == WATER:
         count += 1
   return count
 
@@ -113,6 +125,29 @@ def add_water(map: np.ndarray) -> np.ndarray:
       if map[y][x][2] <= WATER_THRESHOLD:
         map[y][x][0] = WATER
   return remove_small_patches(map)
+
+#==============================================================================================
+
+# BEACH =======================================================================================
+#create beach around one pixel of water (unless there is water already)
+def create_beach(map: np.ndarray, x: int, y: int) -> np.ndarray:
+  chance_beach = [10, 20, 40, 20, 10] #chance of converting pixel to beach
+  for j in range(-2, 3):
+    for i in range(-2, 3):
+      if on_map(map, x+i, y+j) and not map[y+j][x+i][0] == WATER:
+        if random.randint(0, 100) <= chance_beach[j+2]:
+          map[y+j][x+i][0] = SAND[0]
+          map[y+j][x+i][1] = SAND[1]
+  return map
+
+#add beaches surrounding the water
+def add_beach(map: np.ndarray) -> np.ndarray:
+  res_X, res_Y = len(map[0]), len(map)
+  for x in range(res_X):
+    for y in range(res_Y):
+      if map[y][x][0] == WATER:
+        map = create_beach(map, x, y)
+  return map
 #==============================================================================================
 
 #calls all function which will in turn alter the map
@@ -121,8 +156,11 @@ def generate_map(res_X: int, res_Y: int) -> np.ndarray:
 
   map = add_relief(map)
   map = add_biomes(map)
-  map = add_water(map)
+  map = add_water(map) #TODO: connect some lakes with rivers?
+  map = add_beach(map)
 
+  #TODO: houses
+  #TODO: roads
   return map
 
 
@@ -131,14 +169,15 @@ def show_map(map: np.ndarray) -> None:
   RGB_map = HSV_to_RGB(map)
 
   plt.imshow(RGB_map)
+  plt.axis("off")
   plt.show()
 
 
 #start of script
 if __name__ == "__main__":
   try:
-    res_X = 128 #TODO int(input("Width of to be generated map >> "))
-    res_Y = 64  #TODO int(input("Height of to be generated map >> "))
+    res_X = 128  #TODO int(input("Width of to be generated map >> "))
+    res_Y = 64   #TODO int(input("Height of to be generated map >> "))
 
     if res_X <= 0 and res_Y <= 0: #only positive (excl. 0) resolutions
       raise ValueError
