@@ -29,6 +29,6 @@ RELIEF_FACTOR = 18     #how much relief between neighbouring pixels
 #=============================================================================
 
 # WATER RELATED ==============================================================
-WATER_THRESHOLD = 35   #what is the water-level (max 100)
+WATER_THRESHOLD = 37   #what is the water-level (max 100)
 CHANCE_BEACH = [10, 20, 40, 20, 10] #chance of converting pixel next to water to beach
 #=============================================================================

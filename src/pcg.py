@@ -8,7 +8,7 @@ from utility import HSV_to_RGB
 from biomes import *
 
 #initialize blank map
-#hue and value are set to 0, while saturation is set to 100
+#hue and saturation are set to GRASS, value will be overwritten during relief forming
 def init_map(res_X: int, res_Y: int) -> np.ndarray:
   map = np.full((res_Y, res_X, 3), GRASS[0], dtype=int) #contains HSV-values
   for y in range(res_Y):
@@ -16,7 +16,7 @@ def init_map(res_X: int, res_Y: int) -> np.ndarray:
       map[y][x][1] = GRASS[1] #set saturation to 100%
   return map
 
-#return whether the given coordinates are on the board
+#return whether the given coordinates are on the map
 def on_map(map: np.ndarray, x: int, y: int) -> bool:
   res_X, res_Y = len(map[0]), len(map)
   return 0 <= x < res_X and 0 <= y < res_Y
@@ -28,11 +28,11 @@ def increment_lst(pixel: np.ndarray, lst: list) -> list:
       item[1] += 1
       return lst
 
-#return the most frequent biome around (x,y)
-def count_highest_biome(map: np.ndarray, x: int, y: int) -> typing.Tuple[typing.Tuple[int, int], int]:
+#return the most frequent biome around (x,y) in a range R
+def count_highest_biome(map: np.ndarray, x: int, y: int, R: int) -> typing.Tuple[typing.Tuple[int, int], int]:
   lst = copy.deepcopy(BIOME_LIST)
-  for j in range(-2, 3):
-    for i in range(-2, 3):
+  for j in range(-R, R+1):
+    for i in range(-R, R+1):
       if i == 0 and j == 0:
         continue
       if on_map(map, x+i, y+j):
@@ -44,8 +44,8 @@ def count_highest_biome(map: np.ndarray, x: int, y: int) -> typing.Tuple[typing.
 # RELIEF ======================================================================================
 #get the average value of the pixels within a distance of 2
 def avg_relief_around(map: np.ndarray, x: int, y: int) -> int:
-  val = map[y][x][2]
-  count = 1
+  val = 0
+  count = 0
   for j in range(-2, 3):
     for i in range(-2, 3):
       if on_map(map, x+i, y+j):
@@ -109,8 +109,8 @@ def cleanup_biomes(map: np.ndarray) -> np.ndarray:
   res_X, res_Y = len(map[0]), len(map)
   for y in range(res_Y):
     for x in range(res_X):
-      biome, count = count_highest_biome(map, x, y)
-      if count >= 3:
+      biome, count = count_highest_biome(map, x, y, 2)
+      if count >= 8: #too many pixels of a different biome
         map[y][x][0] = biome[0]
         map[y][x][1] = biome[1]
   return map
@@ -150,6 +150,8 @@ def count_non_water(map: np.ndarray, x: int, y: int) -> int:
   count = 0
   for j in range(-1, 2):
     for i in range(-1, 2):
+      if j == 0 and i == 0: #skip the given pixel itself
+        continue
       if on_map(map, x+i, y+j) and not map[y+j][x+i][0] == WATER[0]:
         count += 1
   return count
@@ -159,8 +161,9 @@ def remove_small_patches(map: np.ndarray) -> np.ndarray:
   res_X, res_Y = len(map[0]), len(map)
   for x in range(res_X):
     for y in range(res_Y):
+      #count number of surrounding non-water pixels
       if map[y][x][0] == WATER[0] and count_non_water(map, x, y) >= 5:
-        biome, _ = count_highest_biome(map, x, y)
+        biome, _ = count_highest_biome(map, x, y, 1)
         map[y][x][0] = biome[0]
         map[y][x][1] = biome[1]
         map[y][x][2] = WATER_THRESHOLD+1
@@ -203,7 +206,7 @@ def generate_map(res_X: int, res_Y: int) -> np.ndarray:
   map = init_map(res_X, res_Y)
 
   map = add_relief(map)
-  map = add_biomes(map) #TODO: smoothen the hard edges?
+  map = add_biomes(map)
   map = add_water(map)  #TODO: connect some lakes with rivers?
   map = add_beach(map)
 
