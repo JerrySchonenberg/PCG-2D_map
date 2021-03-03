@@ -21,9 +21,29 @@ def on_map(map: np.ndarray, x: int, y: int) -> bool:
   res_X, res_Y = len(map[0]), len(map)
   return 0 <= x < res_X and 0 <= y < res_Y
 
+#increment count of element in list of the pixel's biome
+def increment_lst(pixel: np.ndarray, lst: list) -> list:
+  for item in lst:
+    if item[0][0] == pixel[0] and item[0][1] == pixel[1]:
+      item[1] += 1
+      return lst
+
+#return the most frequent biome around (x,y)
+def count_highest_biome(map: np.ndarray, x: int, y: int) -> typing.Tuple[typing.Tuple[int, int], int]:
+  lst = copy.deepcopy(BIOME_LIST)
+  for j in range(-2, 3):
+    for i in range(-2, 3):
+      if i == 0 and j == 0:
+        continue
+      if on_map(map, x+i, y+j):
+        count = increment_lst(map[y+j][x+i], lst)
+  biome = max(lst, key=lambda x:x[1])
+  return biome[0], biome[1]
+
+
 # RELIEF ======================================================================================
 #get the average value of the pixels within a distance of 2
-def avg_relief_around(map: np.ndarray, x: int, y: int) -> float:
+def avg_relief_around(map: np.ndarray, x: int, y: int) -> int:
   val = map[y][x][2]
   count = 1
   for j in range(-2, 3):
@@ -31,7 +51,7 @@ def avg_relief_around(map: np.ndarray, x: int, y: int) -> float:
       if on_map(map, x+i, y+j):
         val += map[y+j][x+i][2]
         count += 1
-  return val/count 
+  return int(val/count) 
 
 #add height differences to the map
 #the value of every HSV-pixel will represent its height
@@ -73,7 +93,7 @@ def add_relief(map: np.ndarray) -> np.ndarray:
 
 # BIOMES ======================================================================================
 #randomly select a biome (excluding GRASS and WATER)
-def select_biome() -> typing.Tuple[float, float]:
+def select_biome() -> typing.Tuple[int, int]:
   R = random.randint(0, N_BIOMES-1)
   if R == 0:
     return SAND
@@ -83,25 +103,6 @@ def select_biome() -> typing.Tuple[float, float]:
     return JUNGLE
   elif R == 3:
     return MUSHROOM
-
-#increment count of element in list of the pixel's biome
-def increment_lst(pixel: np.ndarray, lst: list) -> list:
-  for item in lst:
-    if item[0][0] == pixel[0] and item[0][1] == pixel[1]:
-      item[1] += 1
-      return lst
-
-#return the most frequent biome around (x,y)
-def count_highest_biome(map: np.ndarray, x: int, y: int) -> typing.Tuple[typing.Tuple[float, float], int]:
-  lst = copy.deepcopy(BIOME_LIST)
-  for j in range(-2, 3):
-    for i in range(-2, 3):
-      if i == 0 and j == 0:
-        continue
-      if on_map(map, x+i, y+j):
-        count = increment_lst(map[y+j][x+i], lst)
-  biome = max(lst, key=lambda x:x[1])
-  return biome[0], biome[1]
 
 #remove the small patches of biomes
 def cleanup_biomes(map: np.ndarray) -> np.ndarray:
@@ -115,7 +116,7 @@ def cleanup_biomes(map: np.ndarray) -> np.ndarray:
   return map
 
 #create biome with (x,y) as origin
-def create_biome(map: np.ndarray, biome: typing.Tuple[float, float], x: int, y: int) -> np.ndarray:
+def create_biome(map: np.ndarray, biome: typing.Tuple[int, int], x: int, y: int) -> np.ndarray:
   res_X, res_Y = len(map[0]), len(map)
   rad_X, rad_Y = int(res_X/SIZE_X), int(res_Y/SIZE_Y) #radius in which the biome is generated (1/6 of size)
   
@@ -140,7 +141,6 @@ def add_biomes(map: np.ndarray) -> np.ndarray:
       if random.randint(0, 2000) <= CHANCE_BIOME:
         biome = select_biome()
         map = create_biome(map, biome, x, y)
-  #return map
   return cleanup_biomes(map)
 #==============================================================================================
 
@@ -160,7 +160,9 @@ def remove_small_patches(map: np.ndarray) -> np.ndarray:
   for x in range(res_X):
     for y in range(res_Y):
       if map[y][x][0] == WATER[0] and count_non_water(map, x, y) >= 5:
-        map[y][x][0] = GRASS[0]
+        biome, _ = count_highest_biome(map, x, y)
+        map[y][x][0] = biome[0]
+        map[y][x][1] = biome[1]
         map[y][x][2] = WATER_THRESHOLD+1
   return map
 
@@ -201,7 +203,7 @@ def generate_map(res_X: int, res_Y: int) -> np.ndarray:
   map = init_map(res_X, res_Y)
 
   map = add_relief(map)
-  map = add_biomes(map)
+  map = add_biomes(map) #TODO: smoothen the hard edges?
   map = add_water(map)  #TODO: connect some lakes with rivers?
   map = add_beach(map)
 
