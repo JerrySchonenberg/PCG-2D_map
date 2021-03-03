@@ -24,7 +24,7 @@ def on_map(map: np.ndarray, x: int, y: int) -> bool:
 #increment count of element in list of the pixel's biome
 def increment_lst(pixel: np.ndarray, lst: list) -> list:
   for item in lst:
-    if item[0][0] == pixel[0] and item[0][1] == pixel[1]:
+    if item[0][0] == pixel[0]: #biome is based on Hue
       item[1] += 1
       return lst
 
@@ -88,6 +88,16 @@ def add_relief(map: np.ndarray) -> np.ndarray:
     for y in range(res_Y):
       map[y][x][2] = avg_relief_around(map, x, y)
 
+  return map
+#==============================================================================================
+
+# TREES =======================================================================================
+def add_trees(map: np.ndarray) -> np.ndarray:
+  res_X, res_Y = len(map[0]), len(map)
+  for y in range(res_Y):
+    for x in range(res_X):
+      if random.randint(0, 100) <= CHANCE_TREE:
+        map[y][x][1] = TREE[1] #plant a tree
   return map
 #==============================================================================================
 
@@ -206,8 +216,9 @@ def generate_map(res_X: int, res_Y: int) -> np.ndarray:
   map = init_map(res_X, res_Y)
 
   map = add_relief(map)
+  map = add_trees(map) #TODO
   map = add_biomes(map)
-  map = add_water(map)  #TODO: connect some lakes with rivers?
+  map = add_water(map)
   map = add_beach(map)
 
   #TODO: houses

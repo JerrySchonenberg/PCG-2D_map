@@ -24,6 +24,14 @@ BIOME_LIST = [[GRASS, 0],
               [MUSHROOM, 0]]
 #=============================================================================
 
+# MISC =======================================================================
+#COLOR DEF: (Hue, Saturation)
+TREE = (133, 40) #note: same Hue as GRASS (so they are part of same biome)
+CHANCE_TREE = 1  #chance of a tree spawning at one pixel (of 100)
+
+HOUSE = (0, 100)
+#=============================================================================
+
 # RELIEF =====================================================================
 RELIEF_FACTOR = 18     #how much relief between neighbouring pixels
 #=============================================================================
