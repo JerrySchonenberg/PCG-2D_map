@@ -1,10 +1,12 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import random
+import sys
+import math
 import typing
 import copy
 
-from utility import HSV_to_RGB
+from utility import HSV_to_RGB, dist_vector
 from biomes import *
 
 #initialize blank map
@@ -91,16 +93,6 @@ def add_relief(map: np.ndarray) -> np.ndarray:
   return map
 #==============================================================================================
 
-# TREES =======================================================================================
-def add_trees(map: np.ndarray) -> np.ndarray:
-  res_X, res_Y = len(map[0]), len(map)
-  for y in range(res_Y):
-    for x in range(res_X):
-      if random.randint(0, 100) <= CHANCE_TREE:
-        map[y][x][1] = TREE[1] #plant a tree
-  return map
-#==============================================================================================
-
 # BIOMES ======================================================================================
 #randomly select a biome (excluding GRASS and WATER)
 def select_biome() -> typing.Tuple[int, int]:
@@ -108,7 +100,7 @@ def select_biome() -> typing.Tuple[int, int]:
   if R == 0:
     return SAND
   elif R == 1:
-    return DIRT
+    return SAVANNAH
   elif R == 2:
     return JUNGLE
   elif R == 3:
@@ -121,8 +113,7 @@ def cleanup_biomes(map: np.ndarray) -> np.ndarray:
     for x in range(res_X):
       biome, count = count_highest_biome(map, x, y, 2)
       if count >= 8: #too many pixels of a different biome
-        map[y][x][0] = biome[0]
-        map[y][x][1] = biome[1]
+        map[y][x][:2] = biome
   return map
 
 #create biome with (x,y) as origin
@@ -138,8 +129,7 @@ def create_biome(map: np.ndarray, biome: typing.Tuple[int, int], x: int, y: int)
     for i in range(-rad_X, rad_X+1):
       if on_map(map, x+i, y+j):
         if random.randint(0, 100) <= CHANCE_BIOME:
-          map[y+j][x+i][0] = biome[0]
-          map[y+j][x+i][1] = biome[1]
+          map[y+j][x+i][:2] = biome
   return map
 
 #add various biomes to the map
@@ -174,8 +164,7 @@ def remove_small_patches(map: np.ndarray) -> np.ndarray:
       #count number of surrounding non-water pixels
       if map[y][x][0] == WATER[0] and count_non_water(map, x, y) >= 5:
         biome, _ = count_highest_biome(map, x, y, 1)
-        map[y][x][0] = biome[0]
-        map[y][x][1] = biome[1]
+        map[y][x][:2] = biome
         map[y][x][2] = WATER_THRESHOLD+1
   return map
 
@@ -185,8 +174,7 @@ def add_water(map: np.ndarray) -> np.ndarray:
   for x in range(res_X):
     for y in range(res_Y):
       if map[y][x][2] <= WATER_THRESHOLD:
-        map[y][x][0] = WATER[0]
-        map[y][x][1] = WATER[1]
+        map[y][x][:2] = WATER
   return remove_small_patches(map)
 #==============================================================================================
 
@@ -197,8 +185,7 @@ def create_beach(map: np.ndarray, x: int, y: int) -> np.ndarray:
     for i in range(-2, 3):
       if on_map(map, x+i, y+j) and not map[y+j][x+i][0] == WATER[0]:
         if random.randint(0, 100) <= CHANCE_BEACH[j+2]:
-          map[y+j][x+i][0] = SAND[0]
-          map[y+j][x+i][1] = SAND[1]
+          map[y+j][x+i][:2] = SAND
   return map
 
 #add beaches surrounding the water
@@ -211,18 +198,95 @@ def add_beach(map: np.ndarray) -> np.ndarray:
   return map
 #==============================================================================================
 
+# PLANTS ======================================================================================
+#add plants to all biomes (trees, cacti)
+def add_plants(map: np.ndarray) -> np.ndarray:
+  res_X, res_Y = len(map[0]), len(map)
+  for x in range(res_X):
+    for y in range(res_Y):
+      if random.randint(0, 100) <= CHANCE_PLANT: #generate plant?
+        if map[y][x][0] == WATER[0]: #water -> no plant
+          continue
+        elif map[y][x][0] == MUSHROOM[0]: #special biome -> plant red mushroom
+          if random.randint(0,1) == 0: #brown mushroom
+            map[y][x] = BROWN_MUSHROOM
+          else: #red mushroom
+            map[y][x] = RED_MUSHROOM
+        else: #plant tree/cactus
+          if map[y][x][0] == SAND[0] and random.randint(0, 100) > CHANCE_CACTI: #chance of cacti is lower, than trees
+            continue
+          map[y][x] = PLANT
+  return map
+#==============================================================================================
+
+# VILLAGES ====================================================================================
+#get next pixel to continue road with
+def get_next_pixel(map: np.ndarray, x: int, y: int, end: list) -> typing.Tuple[int, int]:
+  best_dist = sys.maxsize
+  next_x, next_y = -1, -1
+
+  for j in range(-1, 2):
+    for i in range(-1, 2):
+      if on_map(map, x+i, y+j) and not map[y+j][x+i][0] == WATER[0]:
+          dist = dist_vector([x+i, y+j], end)
+          if dist < best_dist:
+            best_dist = dist
+            next_x, next_y = x+i, y+j
+  return next_x, next_y
+
+#connect the two villages via a road, don't go over water
+def connect(map: np.ndarray, start: list, end: list) -> np.ndarray:
+  x, y = start[0], start[1] #starting point
+  while not [x, y] == end: #destination not reached yet
+    map[y][x] = ROAD
+    x, y = get_next_pixel(map, x, y, end)
+    if x == -1: #no pixels left, end the road here
+      break
+  return map
+
+#connect (some of) the villages with roads
+def add_roads(map: np.ndarray, loc: list) -> np.ndarray:
+  for i in range(len(loc)):
+    for j in range(i+1, len(loc)):
+      V1, V2 = loc[i], loc[j]
+      if random.randint(0, 100) <= CHANCE_ROAD and dist_vector(V1, V2) <= MAX_DIST:
+        map = connect(map, V1, V2)
+  return map
+
+#add houses to the village with origin (x,y)
+def add_houses(map: np.ndarray, x: int, y: int) -> np.ndarray:
+  for j in range(-SIZE_VILLAGE_Y, SIZE_VILLAGE_Y+1):
+    for i in range(-SIZE_VILLAGE_X, SIZE_VILLAGE_X+1):
+      if random.randint(0, 100) <= CHANCE_HOUSE: #build house
+        if on_map(map, x+i, y+j) and not map[y+j][x+i][0] == WATER[0]:
+          map[y+j][x+i] = HOUSE
+  return map
+
+#add villages to the map, only if it is on land
+def add_villages(map: np.ndarray) -> typing.Tuple[np.ndarray, list]:
+  loc = [] #origin of villages, for creating the roads
+  res_X, res_Y = len(map[0]), len(map)
+  for x in range(res_X):
+    for y in range(res_Y):
+      #only create villages in grass biomes
+      if map[y][x][0] == GRASS[0] and random.randint(0, 2000) <= CHANCE_VILLAGE:
+        map = add_houses(map, x, y)
+        loc.append([x,y]) #save location of origin
+  return map, loc
+#============================================================================================== 
+
 #calls all function which will in turn alter the map
 def generate_map(res_X: int, res_Y: int) -> np.ndarray:
   map = init_map(res_X, res_Y)
 
   map = add_relief(map)
-  map = add_trees(map) #TODO
   map = add_biomes(map)
   map = add_water(map)
   map = add_beach(map)
+  map = add_plants(map)
+  map, loc = add_villages(map)
+  map = add_roads(map, loc)
 
-  #TODO: houses
-  #TODO: roads
   return map
 
 #show generated map with pyplot

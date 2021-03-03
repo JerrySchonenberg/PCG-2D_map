@@ -1,7 +1,17 @@
 #contains various utility functions
 
 import typing
+import math
 import numpy as np
+
+#DISTANCE BETWEEN TWO VECTORS ====================================================
+#euclidian distance
+def dist_vector(V1: list, V2: list) -> int:
+  sum = 0
+  for i in range(len(V1)):
+    sum += (V2[i] - V1[i])**2
+  return int(math.sqrt(sum))
+#=================================================================================
 
 #CONVERSION OF HSV TO RGB ========================================================
 #convert H, C and X to tuple of C, X and 0 in correct order on the basis of H
