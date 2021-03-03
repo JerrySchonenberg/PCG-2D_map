@@ -6,8 +6,8 @@ import math
 import typing
 import copy
 
-from utility import HSV_to_RGB, dist_vector
-from biomes import *
+from utility import HSV_to_RGB, euclidian_dist
+from settings import *
 
 #initialize blank map
 #hue and saturation are set to GRASS, value will be overwritten during relief forming
@@ -91,7 +91,7 @@ def add_relief(map: np.ndarray) -> np.ndarray:
       map[y][x][2] = avg_relief_around(map, x, y)
 
   return map
-#==============================================================================================
+
 
 # BIOMES ======================================================================================
 #randomly select a biome (excluding GRASS and WATER)
@@ -142,7 +142,7 @@ def add_biomes(map: np.ndarray) -> np.ndarray:
         biome = select_biome()
         map = create_biome(map, biome, x, y)
   return cleanup_biomes(map)
-#==============================================================================================
+
 
 # WATER =======================================================================================
 #count the number of non-water pixels around the given pixel
@@ -176,7 +176,7 @@ def add_water(map: np.ndarray) -> np.ndarray:
       if map[y][x][2] <= WATER_THRESHOLD:
         map[y][x][:2] = WATER
   return remove_small_patches(map)
-#==============================================================================================
+
 
 # BEACH =======================================================================================
 #create beach around one pixel of water (unless there is water already)
@@ -196,7 +196,7 @@ def add_beach(map: np.ndarray) -> np.ndarray:
       if map[y][x][0] == WATER[0]:
         map = create_beach(map, x, y)
   return map
-#==============================================================================================
+
 
 # PLANTS ======================================================================================
 #add plants to all biomes (trees, cacti)
@@ -217,9 +217,9 @@ def add_plants(map: np.ndarray) -> np.ndarray:
             continue
           map[y][x] = PLANT
   return map
-#==============================================================================================
 
-# VILLAGES ====================================================================================
+
+# VILLAGES + ROADS ============================================================================
 #get next pixel to continue road with
 def get_next_pixel(map: np.ndarray, x: int, y: int, end: list) -> typing.Tuple[int, int]:
   best_dist = sys.maxsize
@@ -227,8 +227,8 @@ def get_next_pixel(map: np.ndarray, x: int, y: int, end: list) -> typing.Tuple[i
 
   for j in range(-1, 2):
     for i in range(-1, 2):
-      if on_map(map, x+i, y+j) and not map[y+j][x+i][0] == WATER[0]:
-          dist = dist_vector([x+i, y+j], end)
+      if on_map(map, x+i, y+j):
+          dist = euclidian_dist([x+i, y+j], end)
           if dist < best_dist:
             best_dist = dist
             next_x, next_y = x+i, y+j
@@ -249,7 +249,7 @@ def add_roads(map: np.ndarray, loc: list) -> np.ndarray:
   for i in range(len(loc)):
     for j in range(i+1, len(loc)):
       V1, V2 = loc[i], loc[j]
-      if random.randint(0, 100) <= CHANCE_ROAD and dist_vector(V1, V2) <= MAX_DIST:
+      if random.randint(0, 100) <= CHANCE_ROAD and euclidian_dist(V1, V2) <= MAX_DIST:
         map = connect(map, V1, V2)
   return map
 
@@ -279,13 +279,13 @@ def add_villages(map: np.ndarray) -> typing.Tuple[np.ndarray, list]:
 def generate_map(res_X: int, res_Y: int) -> np.ndarray:
   map = init_map(res_X, res_Y)
 
-  map = add_relief(map)
-  map = add_biomes(map)
-  map = add_water(map)
-  map = add_beach(map)
-  map = add_plants(map)
-  map, loc = add_villages(map)
-  map = add_roads(map, loc)
+  map = add_relief(map)          #step 1: relief
+  map = add_biomes(map)          #step 2: biomes
+  map = add_water(map)           #step 3: water
+  map = add_beach(map)           #step 4: beaches
+  map = add_plants(map)          #step 5: plants
+  map, loc = add_villages(map)   #step 6: villages
+  map = add_roads(map, loc)      #step 7: roads
 
   return map
 

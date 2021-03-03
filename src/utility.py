@@ -5,13 +5,11 @@ import math
 import numpy as np
 
 #DISTANCE BETWEEN TWO VECTORS ====================================================
-#euclidian distance
-def dist_vector(V1: list, V2: list) -> int:
+def euclidian_dist(V1: list, V2: list) -> int:
   sum = 0
   for i in range(len(V1)):
     sum += (V2[i] - V1[i])**2
   return int(math.sqrt(sum))
-#=================================================================================
 
 #CONVERSION OF HSV TO RGB ========================================================
 #convert H, C and X to tuple of C, X and 0 in correct order on the basis of H
@@ -26,7 +24,7 @@ def convert(H: float, C: float, X: float) -> typing.Tuple[float, float, float]:
     return (0, X, C)
   elif 240 <= H < 300:
     return (X, 0, C)
-  elif 300 <= H < 360:
+  elif 300 <= H <= 360:
     return (C, 0, X)
 
 #converts the HSV values to RGB, for plot purposes
@@ -48,6 +46,6 @@ def HSV_to_RGB(map: np.ndarray) -> np.ndarray:
 
       #compute final values of RGB-pixel
       RGB_map[y][x] = convert(pixel[0], C, X) + m
- 
+
   return RGB_map
 #=================================================================================
