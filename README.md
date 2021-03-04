@@ -28,7 +28,7 @@ The steps mention various settings and probabilities; these are defined in `sett
 
 ## Requirements <div id="requirements"></div>
 * Python (tested with v3.8)
-* Matplotlib (tested with v3.3.3)
+* Matplotlib (tested with v3.3.3), only for converting the map into an image
 * Numpy (tested with v1.18.5)
 * `settings.py` and `utility.py`
 

@@ -3,7 +3,7 @@
 # NOTES:
 # - For the color definitions, only use integers with a range of 0-360 for the Hue
 #   and 0-100 for Saturation and Value
-# - For all definitions: use positive integers (with the exception of probabilities: here [0,1])
+# - For all definitions: use positive integers (with the exception of probabilities: here [0,1], and octave)
 
 
 #======== BIOMES ========
@@ -60,7 +60,7 @@ ROAD = [0, 0, 35]
 
 
 #======== MISC. ========
-RELIEF_FACTOR = 18 # How much relief between neighbouring pixels is possible
+OCTAVE = 3.5 # Parameter for Perlin-noise
 
 WATER_THRESHOLD = 37   # Water-level (max=100)
 P_BEACH = [0.1, 0.2, 0.4, 0.2, 0.1] # Prob. of converting adding beach to water..

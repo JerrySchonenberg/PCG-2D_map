@@ -3,6 +3,7 @@ import random
 import copy
 import typing
 
+from perlin2d import generate_perlin_noise_2d
 from settings import *
 from utility import euclidian_dist
 
@@ -26,11 +27,17 @@ class Map:
   
   # Start generating the map via the defined procedures
   def generate(self) -> None:
+    print("Generating relief ...")
     self.__add_relief()
+    print("Generating biomes ...")
     self.__add_biomes()
+    print("Generating water ...")
     self.__add_water()
+    print("Generating beaches ...")
     self.__add_beach()
+    print("Generating vegetation ...")
     self.__add_plants()
+    print("Generating villages ...")
     self.__add_villages()
   
   # Return the generated map
@@ -42,50 +49,25 @@ class Map:
 
   #======== RELIEF GENERATION PROCEDURES ========
   # Here, the Value-component is used to represent the height of one pixel
+  # Perlin noise is used to generate the relief
   def __add_relief(self) -> None:
-    # Generate relief horizontally
-    for y in range(self.res_Y):
-      prev = -1
-      for x in range(self.res_X):
-        if prev == -1: # First pixel of row
-          self.map[y][x][2] = prev = random.randint(0, 100)
-        else: # Generate within certain range of previous pixel
-          lim_min = max(0, prev-RELIEF_FACTOR)
-          lim_max = min(100, prev+RELIEF_FACTOR)
-          self.map[y][x][2] = prev = random.randint(lim_min, lim_max)
-    
-    # Smoothen the relief vertically, take avg of vertical neighbors
-    for x in range(self.res_X):
-      for y in range(self.res_Y):
-        if y == 0: # First column, no left neighbor
-          self.map[y][x][2] = (self.map[y][x][2] + self.map[y+1][x][2])/2
-        elif y == self.res_Y-1: # Last column, no right neighbor
-          self.map[y][x][2] = (self.map[y][x][2] + self.map[y-1][x][2])/2
-        else:
-          self.map[y][x][2] = (self.map[y][x][2] + self.map[y+1][x][2] + self.map[y-1][x][2])/3
-    
-    # Take average over all neighbors within distance 2
-    # Aim is to remove the horizontal lines
+    # Generate Perlin Noise
+    noise = generate_perlin_noise_2d((self.res_Y, self.res_X), (4, 4))
+
+    # Normalize to [0, 1], then multiply with 100 for Value (of HSV)
+    noise = (noise - noise.min()) / (noise.max()-noise.min()) * 100
+
+    # Copy the noise to the map
     for y in range(self.res_Y):
       for x in range(self.res_X):
-        self.map[y][x][2] = self.__avg_relief(x, y)
-  
-  # Get the avg value of the pixels surrounding the center with a distance 2
-  def __avg_relief(self, x: int, y: int) -> int:
-    val, count = 0, 0
-    for j in range(-2, 3):
-      for i in range(-2, 3):
-        if self.on_map(x+i, y+j): # Within boundaries?
-          val += self.map[y+j][x+i][2]
-          count += 1
-    return int(val/count)
-  
+        self.map[y][x][2] = noise[y][x]
+    
 
   #======== BIOME GENERATION PROCEDURES ========
   # Here, the Hue- and Saturation-components are altered to represent biomes
   def __add_biomes(self) -> None:
-    for y in range(self.res_Y):
-      for x in range(self.res_X):
+    for y in range(0, self.res_Y, 8):
+      for x in range(0, self.res_X, 8):
         # Add biome to map
         if random.uniform(0,1) <= P_BIOME:
           self.__create_biome(self.__select_biome(), x, y)
@@ -212,8 +194,8 @@ class Map:
   # Add villages and roads to the map, but only if it is on GRASS
   def __add_villages(self) -> None:
     loc = []  # Origin of the villages, for creating the roads
-    for y in range(self.res_Y):
-      for x in range(self.res_X):
+    for y in range(0, self.res_Y, 8):
+      for x in range(0, self.res_X, 8):
         # Only create villages in GRASS biome
         if self.map[y][x][0] == GRASS[0] and random.uniform(0,1) <= P_VILLAGE:
           self.__add_houses(x, y)
