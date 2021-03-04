@@ -7,7 +7,7 @@
 
 
 #======== BIOMES ========
-P_BIOME = 0.0005  # Prob. for a different biome
+P_BIOME = 0.001   # Prob. for a different biome
 SIZE_X = 4        # Horizontal reach of biome = resolution_x/SIZE_X
 SIZE_Y = 4        # Vertical reach of biome   = resolution_y/SIZE_Y
 
@@ -46,7 +46,7 @@ P_CACTI = 0.3    # Cacti are less frequent in desert, so even lower prob..
 
 #======== VILLAGES ========
 P_HOUSE = 0.05      # Prob. of house at a pixel
-P_VILLAGE = 0.005   # Prob. of generating village (out of 2000)
+P_VILLAGE = 0.001   # Prob. of generating village (out of 2000)
 P_ROAD = 0.1        # Prob. of road between two villages
 SIZE_VILLAGE_X = 4  # Max possible width  (= SIZE_VILLAGE_X*2) of village
 SIZE_VILLAGE_Y = 4  # Max possible height (= SIZE_VILLAGE_Y*2) of village

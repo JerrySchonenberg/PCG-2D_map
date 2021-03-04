@@ -49,7 +49,7 @@ This will return the map in HSV-format. If you need the map in RGB-format, simpl
 
 
 ## Examples <div id="examples"></div>
-The directory `img` contains multiple examples of generated landscapes. All examples are with a resolution of 128x64, with the exception of `1024.png`, which has a resolution of 1024x1024 and illustrates that the settings must be finetuned in order to get realistic landscapes at different resolutions. 
+The directory `img` contains multiple examples of generated landscapes. All examples are with a resolution of 128x64, with the exception of `1024.png`, which has a resolution of 1024x1024 and illustrates that the settings must be finetuned in order to get realistic landscapes at different resolutions. Moreover, the directory also contains a subdirectory in which the effect of every step is illustrated with a random seed of 42.
 
 One example landscape (128x64) is given below:
 ![Example landscape](/img/example1.png)
@@ -62,6 +62,13 @@ project/
 ├── README.md
 ├── report.pdf
 ├── img
+|   ├── progression_seed42
+|   |   ├── 1_relief.png
+|   |   ├── 2_biomes.png
+|   |   ├── 3_water.png
+|   |   ├── 4_beaches.png
+|   |   ├── 5_vegetation.png
+|   |   └── 6_village.png
 |   ├── 1024.png
 |   ├── example1.png
 |   ├── example2.png

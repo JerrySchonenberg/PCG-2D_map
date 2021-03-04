@@ -27,11 +27,11 @@ class Map:
   # Start generating the map via the defined procedures
   def generate(self) -> None:
     self.__add_relief()
-    self.__add_biomes()
-    self.__add_water()
-    self.__add_beach()
-    self.__add_plants()
-    self.__add_villages()
+    #self.__add_biomes()
+    #self.__add_water()
+    #self.__add_beach()
+    #self.__add_plants()
+    #self.__add_villages()
   
   # Return the generated map
   def get_map(self) -> np.ndarray:
