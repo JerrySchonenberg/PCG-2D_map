@@ -25,4 +25,4 @@ if __name__ == "__main__":
 
   M = Map(res_X, res_Y)
   M.generate()     # Generate the map with the procedures
-  show_map(M.map)  # Show the map with pyplot
+  show_map(M.get_map())  # Show the map with pyplot

@@ -33,6 +33,10 @@ class Map:
     self.__add_plants()
     self.__add_villages()
   
+  # Return the generated map
+  def get_map(self) -> np.ndarray:
+    return self.map
+
 
   # Private methods of class
 
