@@ -23,6 +23,6 @@ if __name__ == "__main__":
     print("Error: Invalid input.")
     exit(1)
 
-  M = Map(res_X, res_Y, 42)
+  M = Map(res_X, res_Y)
   M.generate()     # Generate the map with the procedures
   show_map(M.get_map())  # Show the map with pyplot
