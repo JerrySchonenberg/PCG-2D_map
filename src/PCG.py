@@ -113,7 +113,7 @@ class Map:
   def __select_biome(self) -> typing.Tuple[int, int]:
     R = random.randint(0, N_BIOMES-1)
     if R == 0   : return DESERT
-    elif R == 1 : return SAVANNAH
+    elif R == 1 : return SAVANNA
     elif R == 2 : return JUNGLE
     elif R == 3 : return MYCELLIUM
   

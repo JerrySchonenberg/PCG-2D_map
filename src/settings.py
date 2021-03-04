@@ -16,7 +16,7 @@ SIZE_Y = 4        # Vertical reach of biome   = resolution_y/SIZE_Y
 GRASS = [133, 100]     # Also init value of map
 WATER = [206, 100]
 DESERT = [46, 34]        # For around the water and desert
-SAVANNAH = [32, 54]
+SAVANNA = [32, 54]
 JUNGLE = [160, 79]
 MYCELLIUM = [267, 26]  # From Minecraft (purple ground with mushrooms)
 
@@ -28,7 +28,7 @@ N_BIOMES = 4           # Number of biomes, excluding GRASS and WATER
 BIOME_LIST = [[GRASS, 0],
               [WATER, 0],
               [DESERT, 0],
-              [SAVANNAH, 0],
+              [SAVANNA, 0],
               [JUNGLE, 0],
               [MYCELLIUM, 0]]
 
