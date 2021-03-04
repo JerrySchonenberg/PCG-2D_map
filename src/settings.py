@@ -15,7 +15,7 @@ SIZE_Y = 4        # Vertical reach of biome   = resolution_y/SIZE_Y
 # IMPORTANT: The Hue value for each biome must be unique
 GRASS = [133, 100]     # Also init value of map
 WATER = [206, 100]
-SAND = [46, 34]        # For around the water and desert
+DESERT = [46, 34]        # For around the water and desert
 SAVANNAH = [32, 54]
 JUNGLE = [160, 79]
 MYCELLIUM = [267, 26]  # From Minecraft (purple ground with mushrooms)
@@ -27,7 +27,7 @@ N_BIOMES = 4           # Number of biomes, excluding GRASS and WATER
 # When adding more biomes, include it in this list
 BIOME_LIST = [[GRASS, 0],
               [WATER, 0],
-              [SAND, 0],
+              [DESERT, 0],
               [SAVANNAH, 0],
               [JUNGLE, 0],
               [MYCELLIUM, 0]]
@@ -66,4 +66,4 @@ WATER_THRESHOLD = 37   # Water-level (max=100)
 P_BEACH = [0.1, 0.2, 0.4, 0.2, 0.1] # Prob. of converting adding beach to water..
                                     # .. the middle prob. is the closest to the..
                                     # .. water; left is upwards, right is downwards
-BEACH = SAND # Color of the beach, only define Hue and Saturation
+BEACH = DESERT # Color of the beach, only define Hue and Saturation

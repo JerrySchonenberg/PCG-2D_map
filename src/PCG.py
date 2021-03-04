@@ -112,7 +112,7 @@ class Map:
   # Randomly selects a biome (excluding GRASS and WATER)
   def __select_biome(self) -> typing.Tuple[int, int]:
     R = random.randint(0, N_BIOMES-1)
-    if R == 0   : return SAND
+    if R == 0   : return DESERT
     elif R == 1 : return SAVANNAH
     elif R == 2 : return JUNGLE
     elif R == 3 : return MYCELLIUM
@@ -203,7 +203,7 @@ class Map:
             self.map[y][x] = BROWN_MUSHROOM if random.randint(0,1) == 0 else RED_MUSHROOM
           else: # Plant trees/bushes/cacti
             # Chance of cacti is lower than trees/bushes
-            if self.map[y][x][0] == SAND[0] and random.uniform(0,1) > P_CACTI:
+            if self.map[y][x][0] == DESERT[0] and random.uniform(0,1) > P_CACTI:
               continue
             self.map[y][x] = PLANT
   
