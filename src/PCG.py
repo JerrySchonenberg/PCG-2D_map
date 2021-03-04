@@ -83,7 +83,7 @@ class Map:
     for y in range(self.res_Y):
       for x in range(self.res_X):
         # Add biome to map
-        if random.randint(0, 2000) <= CHANCE_BIOME:
+        if random.randint(0, 2000) <= P_BIOME:
           self.__create_biome(self.__select_biome(), x, y)
     self.__cleanup_biomes() # Remove small patches of biomes
   
@@ -119,12 +119,12 @@ class Map:
     rad_X, rad_Y = int(self.res_X/SIZE_X), int(self.res_Y/SIZE_Y)
 
     step = int(50/rad_Y)*2 # Stepsize to in-/decrease the chance
-    CHANCE = 0
+    P = 0
     for j in range(-rad_Y, rad_Y+1):
       mult = 1 if j < 0 else -1 # Increase or decrease chance?
-      CHANCE += step * mult     # Highest around origin
+      P += step * mult     # Highest around origin
       for i in range(-rad_X, rad_X+1):
-        if self.on_map(x+i, y+j) and random.randint(0, 100) <= CHANCE:
+        if self.on_map(x+i, y+j) and random.randint(0, 100) <= P:
           self.map[y+j][x+i][:2] = biome
   
   # Remove the small patches of biomes; not realistic
@@ -182,7 +182,7 @@ class Map:
     for j in range(-2, 3):
       for i in range(-2, 3):
         if self.on_map(x+i, y+j) and not self.map[y+j][x+i][0] == WATER[0]:
-          if random.randint(0, 100) <= CHANCE_BEACH[j+2]: # Change pixel to beach
+          if random.randint(0, 100) <= P_BEACH[j+2]: # Change pixel to beach
             self.map[y+j][x+i][:2] = BEACH
 
 
@@ -191,7 +191,7 @@ class Map:
   def __add_plants(self) -> None:
     for y in range(self.res_Y):
       for x in range(self.res_X):
-        if random.randint(0, 100) <= CHANCE_PLANT: # Generate a new plant?
+        if random.randint(0, 100) <= P_PLANT: # Generate a new plant?
           # Determine type of plant, based on the biome
           if self.map[y][x][0] == WATER[0]:  # Water? -> no plant
             continue
@@ -199,7 +199,7 @@ class Map:
             self.map[y][x] = BROWN_MUSHROOM if random.randint(0,1) == 0 else RED_MUSHROOM
           else: # Plant trees/bushes/cacti
             # Chance of cacti is lower than trees/bushes
-            if self.map[y][x][0] == SAND[0] and random.randint(0, 100) > CHANCE_CACTI:
+            if self.map[y][x][0] == SAND[0] and random.randint(0, 100) > P_CACTI:
               continue
             self.map[y][x] = PLANT
   
@@ -211,7 +211,7 @@ class Map:
     for y in range(self.res_Y):
       for x in range(self.res_X):
         # Only create villages in GRASS biome
-        if self.map[y][x][0] == GRASS[0] and random.randint(0, 2000) <= CHANCE_VILLAGE:
+        if self.map[y][x][0] == GRASS[0] and random.randint(0, 2000) <= P_VILLAGE:
           self.__add_houses(x, y)
           loc.append([x,y])
     self.__add_roads(loc) # Connect the villages via roads
@@ -220,7 +220,7 @@ class Map:
   def __add_houses(self, x: int, y: int) -> None:
     for j in range(-SIZE_VILLAGE_Y, SIZE_VILLAGE_Y+1):
       for i in range(-SIZE_VILLAGE_X, SIZE_VILLAGE_X+1):
-        if random.randint(0, 100) <= CHANCE_HOUSE: # Build house
+        if random.randint(0, 100) <= P_HOUSE: # Build house
           if self.on_map(x+i, y+j) and not self.map[y+j][x+i][0] == WATER[0]:
             self.map[y+j][x+i] = HOUSE
   
@@ -229,7 +229,7 @@ class Map:
     for j in range(len(loc)):
       for i in range(j+1, len(loc)):
         V1, V2 = loc[i], loc[j]
-        if random.randint(0, 100) <= CHANCE_ROAD and euclidian_dist(V1, V2) <= MAX_DIST:
+        if random.randint(0, 100) <= P_ROAD and euclidian_dist(V1, V2) <= MAX_DIST:
           self.__connect(V1, V2)  # Connect villages V1 and V2 with road
 
   # Connect the two given villages
