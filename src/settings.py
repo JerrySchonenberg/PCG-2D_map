@@ -7,63 +7,71 @@
 
 
 #======== BIOMES ========
-P_BIOME = 0.001   # Prob. for a different biome
-SIZE_X = 4        # Horizontal reach of biome = resolution_x/SIZE_X
-SIZE_Y = 4        # Vertical reach of biome   = resolution_y/SIZE_Y
-
-# COLOR DEF: (Hue, Saturation) | here, Value is based on the relief\
-# IMPORTANT: The Hue value for each biome must be unique
-GRASS = [133, 100]     # Also init value of map
+# COLOR DEF: (Hue, Saturation) | here, Value is based on the relief
+# NOTE: each Hue must be unique in order to identify it
 WATER = [206, 100]
-DESERT = [46, 34]        # For around the water and desert
-SAVANNA = [32, 54]
-JUNGLE = [160, 79]
-MYCELLIUM = [267, 26]  # From Minecraft (purple ground with mushrooms)
+BEACH = [62, 55]
+GRASS = [133, 100]
+FOREST = [135, 50]
+DIRT = [26, 77]
+MOUNTAIN = [10, 70]
+SNOW = [16, 20]
 
-N_BIOMES = 4           # Number of biomes, excluding GRASS and WATER
-
-# List of all types of pixels, used for making smooth transitions..
-# ..each time, take a deepcopy of this
-# When adding more biomes, include it in this list
-BIOME_LIST = [[GRASS, 0],
-              [WATER, 0],
-              [DESERT, 0],
-              [SAVANNA, 0],
-              [JUNGLE, 0],
-              [MYCELLIUM, 0]]
+N_BIOMES = 7
+WATER_THRESHOLD = 37     # Water-level
+BEACH_THRESHOLD = 42     # Beach surrounding the water
+GRASS_THRESHOLD = 50     # Grass level
+FOREST_THRESHOLD = 75    # Forest level
+DIRT_THRESHOLD = 80      # Dirt level
+MOUNTAIN_THRESHOLD = 96  # Mountain level
+SNOW_THRESHOLD = 100     # Snow/vulcano level
 
 
 #======== PLANTS ========
 # COLOR DEF: (Hue, Saturation, Value)
 PLANT = [100, 100, 40]
-BROWN_MUSHROOM = [30, 34, 64]  # Exclusively to MYCELLIUM
-RED_MUSHROOM = [359, 77, 100]
-
-P_PLANT = 0.05   # Prob. to generate plant
-P_CACTI = 0.3    # Cacti are less frequent in desert, so even lower prob..
-                 # .. the prob for cacti is P_CACTI of P_PLANT
+TRUNK = [12, 50, 36]
+P_VEGETATION = 0.05        # Prob. to generate vegetation
+P_VEGETATION_DIRT = 0.005  # Prob. on dirt
 
 
 #======== VILLAGES ========
-P_HOUSE = 0.05      # Prob. of house at a pixel
-P_VILLAGE = 0.001   # Prob. of generating village (out of 2000)
-P_ROAD = 0.1        # Prob. of road between two villages
-SIZE_VILLAGE_X = 4  # Max possible width  (= SIZE_VILLAGE_X*2) of village
-SIZE_VILLAGE_Y = 4  # Max possible height (= SIZE_VILLAGE_Y*2) of village
+P_HOUSE = 0.05       # Prob. of house at a pixel
+P_VILLAGE = 0.0003   # Prob. of generating village
+P_ROAD = 0.04        # Prob. of road between two villages
+SIZE_VILLAGE_X = 7   # Max possible width  (= SIZE_VILLAGE_X*2) of village
+SIZE_VILLAGE_Y = 7   # Max possible height (= SIZE_VILLAGE_Y*2) of village
+SIZE_HOUSE = 2
 
-MAX_DIST = 32 # Max distance between two villages to create road between them
-              # (Euclidian distance is used)
+MAX_DIST = 128 # Max distance between two villages to create road between them
+               # (Euclidian distance)
 
 # COLOR DEF: (Hue, Saturation, Value)
 HOUSE = [0, 100, 40]
-ROAD = [0, 0, 35]
+ROAD = [1, 0, 0]
+BRIDGE = [17, 64, WATER_THRESHOLD]
 
 
-#======== MISC. ========
-OCTAVE = 3.5 # Parameter for Perlin-noise
+#======== PERLIN/FRACTAL NOISE ========
+OCTAVE = 5
+RES = (3,4)
 
-WATER_THRESHOLD = 37   # Water-level (max=100)
-P_BEACH = [0.1, 0.2, 0.4, 0.2, 0.1] # Prob. of converting adding beach to water..
-                                    # .. the middle prob. is the closest to the..
-                                    # .. water; left is upwards, right is downwards
-BEACH = DESERT # Color of the beach, only define Hue and Saturation
+
+#======== FLAG ON MOUNTAIN ========
+P_FLAG = 0.001            # Prob. of generating a flag
+FLAG_RED = [3, 100, 100]
+FLAG_BLACK = [2, 100, 0]
+
+
+#======== VULCANO ========
+P_VULCANO = 0.3           # Prob. of generating a vulcano
+P_VULCANO_STOP = 0.001    # Prob. to stop the stream of lava
+VULCANO_COLOR = [[5, 89], [7, 89], [11, 89]]
+VULCANO_STONE = [4, 0, 50]
+
+
+#======== BOATS ========
+P_BOAT = 0.00005          # Prob. of generating a boat
+LEN_BOAT = 10
+LEN_SIDES = 5
+BOAT_BROWN = [27, 77, 28]
