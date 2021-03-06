@@ -19,7 +19,7 @@ class Map:
 
     self.origin_villages = []  # Store the origin of all villages
 
-    self.vulcano = False  # Does the map contain a vulcano?
+    self.volcano = False  # Does the map contain a volcano?
     self.snow = np.zeros((res_Y, res_X), dtype=bool)  # Contains location of the snow
    
     self.seed = seed
@@ -137,10 +137,10 @@ class Map:
           self.__boat(x, y)
 
         elif hue == SNOW[0]:
-          if not self.vulcano and P < P_VULCANO:
-            self.__vulcano(x, y)        # Replace top of mountain with vulcano
-            self.__vulcano_stream(x, y)
-            self.vulcano = True
+          if not self.volcano and P < P_VOLCANO:
+            self.__volcano(x, y)        # Replace top of mountain with volcano
+            self.__volcano_stream(x, y)
+            self.volcano = True
           elif P < P_FLAG:
             self.__flag_mountain(x, y)  # Generate flag of climbers
     print("Adding roads to map ...")
@@ -162,7 +162,7 @@ class Map:
       for i in range(-LEN_SIDES-3, 1):
         self.map[y-LEN_SIDES-1+j][x+i] = [random_hue, 100, WATER_THRESHOLD] # Random color
     
-  # Extend the vulcano stream with one pixel, return the next end of the stream
+  # Extend the volcano stream with one pixel, return the next end of the stream
   def __extend_stream(self, x: int, y: int, direction: int) -> typing.Tuple[int, int]:
     if direction == 0:    # Top-left
       x -= 1
@@ -190,34 +190,34 @@ class Map:
     for j in range(-1, 2):
       for i in range(-1, 2):
         if self.on_map(x+i, y+j):
-          self.map[y][x][:2] = VULCANO_COLOR[random.randint(0,2)]
+          self.map[y][x][:2] = VOLCANO_COLOR[random.randint(0,2)]
     return x, y
 
-  # Add a stream going down the vulcano
-  def __vulcano_stream(self, x: int, y: int) -> None:
+  # Add a stream going down the volcano
+  def __volcano_stream(self, x: int, y: int) -> None:
     prev = 12  # Previous direction: 12-4=8 (8 is not a direction, see __extend_stream)
-    while not x == -1 or random.uniform(0,1) < P_VULCANO_STOP: # If x == -1, end is reached
+    while not x == -1 or random.uniform(0,1) < P_VOLCANO_STOP: # If x == -1, end is reached
       # Determine next direction, eight surrounding pixels
       direction = random.randint(0, 8)
       if abs(direction-4) == prev: # Direction is backwards, prevent this
         direction = (direction + random.randint(0, 7)) % 8
       x, y = self.__extend_stream(x, y, direction)
 
-  # Replace the top of the mountain with a vulcano
+  # Replace the top of the mountain with a volcano
   # This is done recursively, where self.snow is updated
-  def __vulcano(self, x: int, y: int) -> None:
+  def __volcano(self, x: int, y: int) -> None:
     if not self.snow[y][x]:
       return
-    self.map[y][x][:2] = VULCANO_COLOR[random.randint(0,2)]
+    self.map[y][x][:2] = VOLCANO_COLOR[random.randint(0,2)]
     self.snow[y][x] = False
 
     for j in range(-1, 2):
       for i in range(-1, 2):
         if self.on_map(x+i, y+j):
           if self.snow[y+j][x+i]:
-            self.__vulcano(x+i, y+j)
+            self.__volcano(x+i, y+j)
           elif self.map[y+j][x+i][2] <= MOUNTAIN_THRESHOLD:
-            self.map[y+j][x+i] = VULCANO_STONE
+            self.map[y+j][x+i] = VOLCANO_STONE
 
   # Generate flag on top of a mountain
   def __flag_mountain(self, x: int, y: int) -> None:

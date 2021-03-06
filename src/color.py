@@ -36,8 +36,8 @@ FLAG_RED = [3, 100, 100]
 FLAG_BLACK = [2, 100, 0]
 
 # Lava/magma of vulcano
-VULCANO_COLOR = [[5, 89], [7, 89], [11, 89]]  # [Hue, Saturation]
-VULCANO_STONE = [4, 0, 50]
+VOLCANO_COLOR = [[5, 89], [7, 89], [11, 89]]  # [Hue, Saturation]
+VOLCANO_STONE = [4, 0, 50]
 
 # Underside of boat
 BOAT_BROWN = [27, 77, 28]

@@ -27,8 +27,8 @@ P_VILLAGE = 0.0003         # Prob. of generating a village
 P_ROAD = 0.04              # Prob. of connecting two villages
 #MOUNTAINS
 P_FLAG = 0.001             # Prob. of generating a flag
-P_VULCANO = 0.3            # Prob. of generating a vulcano
-P_VULCANO_STOP = 0.001     # Prob. to stop the stream of lava
+P_VOLCANO = 0.3            # Prob. of generating a volcano
+P_VOLCANO_STOP = 0.001     # Prob. to stop the stream of lava
 #BOATS
 P_BOAT = 0.00005           # Prob. of generating a boat
 
