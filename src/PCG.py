@@ -5,6 +5,7 @@ import typing
 
 from perlin2d import generate_fractal_noise_2d
 from settings import *
+from color import *
 from utility import euclidian_dist
 
 # Definition of the map; contains all procedure, ordered by when they are called
@@ -14,6 +15,8 @@ class Map:
     self.res_X = res_X  # Resolution of map
     self.res_Y = res_Y
     self.map = np.empty((res_Y, res_X, 3), dtype=int) # Contains the HSV-values
+    self.relief = []  # Height map [0-100]
+
     self.origin_villages = []  # Store the origin of all villages
 
     self.vulcano = False  # Does the map contain a vulcano?
@@ -34,11 +37,16 @@ class Map:
     self.__biomes()    # Water, beach, biomes
     print("Populating the map ...")
     self.__populate()  # Vegetation, villages, roads and more
+    self.__recolor()   # Give some of the biomes their correct color
     print("Generation is complete!")
   
   # Return the generated map
   def get_map(self) -> np.ndarray:
     return self.map
+  
+  # Return the relief of the generated map
+  def get_relief(self) -> np.ndarray:
+    return self.relief
 
 
   # Private methods of class
@@ -51,12 +59,12 @@ class Map:
     noise = generate_fractal_noise_2d((self.res_Y, self.res_X), RES, OCTAVE, seed=self.seed)
 
     # Normalize to [0, 1], then multiply with 100 for Value (of HSV)
-    noise = (noise - noise.min()) / (noise.max()-noise.min()) * 100
+    self.relief = (noise - noise.min()) / (noise.max()-noise.min()) * 100
 
     # Copy the noise to the map
     for y in range(self.res_Y):
       for x in range(self.res_X):
-        self.map[y][x][2] = noise[y][x]  # Value-component gets the height-value
+        self.map[y][x][2] = self.relief[y][x]  # Value-component gets the height-value
     
 
   #======== BIOME GENERATION PROCEDURES ========
@@ -88,8 +96,24 @@ class Map:
         elif height <= SNOW_THRESHOLD:
           self.map[y][x][:2] = SNOW
           self.snow[y][x] = True
-
   
+  # Due to the use of HSV in combination with relief, it was not possible to give each..
+  # .. biome their correct color with __biomes(), so here the Value is changed for the correct color
+  # But since all other transformations are finished, we can alter the Value of each pixel in the biomes
+  # Moreover, the actual height is saved in self.relief, so no information is lost
+  def __recolor(self) -> None:
+    # Loop over all pixels in the map
+    for y in range(self.res_Y):
+      for x in range(self.res_X):
+        # Change the color, NOTE: the lightness still indicates the height of it
+        if self.map[y][x][0] == BEACH[0]:
+          self.map[y][x][2] += BEACH_VALUE_OFFSET
+        elif self.map[y][x][0] == DIRT[0]:
+          self.map[y][x][2] += DIRT_VALUE_OFFSET
+        elif self.map[y][x][0] == MOUNTAIN[0]:
+          self.map[y][x][2] += MOUNTAIN_VALUE_OFFSET
+
+
   #======== POPULATE GENERATION PROCEDURES ========
   # Add various objects to the generated world (villages, roads, vegetation, etc.)
   def __populate(self) -> None:
@@ -223,7 +247,7 @@ class Map:
   def __house(self, x: int, y: int) -> None:
     for j in range(-SIZE_HOUSE, 1):
       for i in range(-SIZE_HOUSE, 1):
-        if self.on_map(x+i, y+j) and not self.map[y+j][x+i][0] == WATER[0]:
+        if self.on_map(x+i, y+j) and not self.map[y+j][x+i][0] == WATER[0]: # Not on water
           self.map[y+j][x+i] = HOUSE
 
   # Generate a village with origin (x,y)
