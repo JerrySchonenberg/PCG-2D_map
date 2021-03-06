@@ -41,7 +41,7 @@ After this, the script asks for the horizontal and vertical resolution of the ma
 
 It is also possible to import `PCG.py` (which contains the class with which the map is generated). To create a new class instance of `Map` and generate a new map, simply use the following code:
 ```
-M = Map(res_X, res_Y, seed)  # Create new instance of Map; seed is optionol
+M = Map(res_X, res_Y, seed)  # Create new instance of Map; seed is optional
 M.generate()                 # Generate map
 map = M.get_map()            # Get the HSV-map
 height_map = M.get_relief()  # Get the height-map (values in range [0,100])
