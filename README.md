@@ -1,5 +1,5 @@
 # Procedural Content Generation
-### Jerry Schonenberg (s2041022) | 06-03-2021
+### Jerry Schonenberg (s2041022) | 07-03-2021
 ##### Modern Game AI Algorithms - Assignment 1
 This project contains the code for the first assignment of Modern Game AI Algorithms, where a 2D-map has to be generated with procedures which represents a landscape. HSV-values are used for the pixels such that the Hue and Saturation represent the biome and the Value represents the height.
 
