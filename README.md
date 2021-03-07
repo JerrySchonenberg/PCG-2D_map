@@ -50,7 +50,7 @@ This will return the map in HSV-format. If you need the map in RGB-format, simpl
 
 ## Examples <div id="examples"></div>
 The directory `img` contains multiple examples of generated landscapes. All examples are with a resolution of 1280x720. One example landscape is given below, which is generated with the seed set to 42:
-![Example landscape](/img/example1_seed42.png)
+![Example landscape](/img/progression/3_populating.png)
 
 ## Hierarchy <div id="index"></div>
 Here, an overview of all files of the project is given:
