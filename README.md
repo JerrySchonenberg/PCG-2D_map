@@ -23,7 +23,7 @@ The components of the landscape are generated with the following steps:
 4. **Add plants to the biomes**; Trees and bushes are generated in `FOREST` and `DIRT`. The probability for vegetation to spawn on a pixel for `FOREST` and `DIRT` is specified with `P_VEGETATION` and `P_VEGETATION_DIRT` respectively.
 5. **Add villages to the landscape**; for every pixel is a probability `P_VILLAGE` that it becomes the origin of a village. Then, if this is case, in a radius of `SIZE_VILLAGE_X` and `SIZE_VILLAGE_Y`, for every pixel is determined whether it becomes a house (probability is `P_HOUSE`). The origin of the village is saved for later. Villages can only generate in or nearby the `GRASS` biome and not on water.
 6. **Add vulcanos, boats and flags**; based on their respective probabilities, vulcanos, boats and flags can be generated in the map. Vulcanos and flags are exclusive to the `SNOW` biome, while the boats are exclusive to `WATER`.
-7. **Connect (some of) the villages with roads**; as mentioned in the previous step, the origin of every village is saved. Here, these origins are connected by road with a probability `P_ROAD`. Thereby, if the distance (Euclidian distance) between these origins is larger than `MAX_DIST`, then no road is generated. Then, with the use of the Euclidian distance, the shortest path between the two origins is generated.
+7. **Connect (some of) the villages with roads**; as mentioned in a previous step, the origin of every village is saved. Here, these origins are connected by road with a probability `P_ROAD`. Thereby, if the distance (Euclidian distance) between these origins is larger than `MAX_DIST`, then no road is generated. Then, with the use of the Euclidian distance, the shortest path between the two origins is generated.
 
 The steps mention various settings and probabilities; these are defined in `settings.py` with their effect described. There are also definitions regarding the color of biomes, houses and roads. The current settings are finetuned for a resolution of 1280x720 (720p).
 
@@ -37,7 +37,7 @@ In order to generate a landscape, simply run the following command:
 ```
 python3 main.py
 ```
-After this, the script asks for the horizontal and vertical resolution of the map. Then the script will generate the map and show it via pyplot. These resolutions must meet the following criteria: they must be a multiple of `lacunarity^(octaves-1)*res`. The current settings work for 720p. Currently, the values for these variables are: `lacunarity=2, octaves=5 and res=(3,4)`. Only octaves and res are defined in `settings.py`.
+After this, the script asks for the horizontal and vertical resolution of the map. Then the script will generate the map and show it via matplotlib. These resolutions must meet the following criteria: they must be a multiple of `lacunarity^(octaves-1)*res`. The values for these variables are: `lacunarity=2, octaves=5 and res=(3,4)`. Only octaves and res are defined in `settings.py`. The current settings work for 720p.
 
 It is also possible to import `PCG.py` (which contains the class with which the map is generated). To create a new class instance of `Map` and generate a new map, simply use the following code:
 ```
@@ -60,11 +60,14 @@ Procedural-Content-Generation/
 ├── report.pdf
 ├── .gitignore
 ├── img
-|   ├── example1_seed42.png
+|   ├── progresion_seed42
+|   |   ├── 1_relief.png
+|   |   ├── 2_biomes.png
+|   |   └── 3_populating.png
+|   ├── example1.png
 |   ├── example2.png
 |   ├── example3.png
-|   ├── example4.png
-|   └── example5.png
+|   └── example4.png
 └── src
     ├── main.py
     ├── perlin2d.py
