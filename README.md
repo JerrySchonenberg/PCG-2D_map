@@ -37,7 +37,7 @@ In order to generate a landscape, simply run the following command:
 ```
 python3 main.py
 ```
-After this, the script asks for the horizontal and vertical resolution of the map. Then the script will generate the map and show it via matplotlib. These resolutions must meet the following criteria: they must be a multiple of `lacunarity^(octaves-1)*res`. The values for these variables are: `lacunarity=2, octaves=5 and res=(3,4)`. Only octaves and res are defined in `settings.py`. The current settings work for 720p.
+After this, the script asks for the horizontal and vertical resolution of the map. Then the script will generate the map and show it via matplotlib. These resolutions must meet the following criteria: they must be a multiple of `lacunarity^(octaves-1)*res`. The values for these variables are: `lacunarity=2, octaves=5 and res=(3,4)`. Only octaves and res are defined in `settings.py`. The current settings work for 720p. Additionally, an output file is asked, this is where the generated map (excluding the height-map) will be stored.
 
 It is also possible to import `PCG.py` (which contains the class with which the map is generated). To create a new class instance of `Map` and generate a new map, simply use the following code:
 ```
