@@ -29,6 +29,6 @@ if __name__ == "__main__":
     exit(1)
 
   print("\n")
-  M = Map(res_X, res_Y, 42)
+  M = Map(res_X, res_Y)
   M.generate()                   # Generate the map with the procedures
   show_map(M.get_map(), output)  # Show the map with pyplot
