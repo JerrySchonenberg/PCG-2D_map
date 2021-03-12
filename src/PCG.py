@@ -8,14 +8,14 @@ from settings import *
 from color import *
 from utility import euclidian_dist
 
-# Definition of the map; contains all procedure, ordered by when they are called
+# Definition of the map; contains all procedures, ordered by when they are called
 class Map:
   # Initialization of the map
   def __init__(self, res_X: int, res_Y: int, seed: int = None) -> None:
     self.res_X = res_X  # Resolution of map
     self.res_Y = res_Y
     self.map = np.empty((res_Y, res_X, 3), dtype=int) # Contains the HSV-values
-    self.relief = []  # Height map [0-100]
+    self.relief = []    # Height map [0-100]
 
     self.origin_villages = []  # Store the origin of all villages
 
