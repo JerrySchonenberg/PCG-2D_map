@@ -1,4 +1,4 @@
-# Procedural Content Generation
+# Procedural Content Generation - 2D map
 This project contains the code to generate a 2D-map (representing a landscape) with procedures. HSV-values are used for the pixels such that the Hue and Saturation represent the biome and the Value represents the height.
 
 The landscape consists of: relief, 7 biomes, vegetation, villages, roads, volcanos, boats and flags. The 7 biomes are: `WATER`, `BEACH`, `GRASS`, `FOREST`, `DIRT`, `MOUNTAIN` and `SNOW`. Since the Value-component is reserved for relief, each biome is defined with a Hue and Saturation. Please note that the Hue must be _unique_ for every biome. These definitions are denoted in `/src/color.py`. At which heights every biome appears, along with other definitions, is denoted in `/src/settings.py`.
