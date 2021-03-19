@@ -57,6 +57,7 @@ Here, an overview of all files of the project is given:
 Procedural-Content-Generation/
 ├── README.md
 ├── requirements.txt
+├── LICENSE
 ├── .gitignore
 ├── img
 |   ├── progresion_seed42
